@@ -1,11 +1,18 @@
-h1 {color: #ffffff;}
+h1 {
+    font-family: sans-serif;
+    color: #ffffff;
+}
 p {
+    font-family: sans-serif;
     color: #ffffff;
     margin-bottom: -10px;
 }
 pre {
-    color: #ffffff;
+    font-size: 13px;
+    color: #cecece;
     white-space: pre-wrap;
+    max-width: 90%;
+    overflow-wrap: break-word;
 }
 body {
     background-color: #1e1e1e;

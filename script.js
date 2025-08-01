@@ -7,6 +7,7 @@ const file_name_display = document.getElementById('fileNameDisplay');
 const preview = document.getElementById('imagePreview');
 
 
+
 const colors = [
     [[3001, 0], [46, 51, 54]],
     [[3001, 0], [55, 56, 60]],
