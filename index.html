@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="styles.css" type="text/css">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+    <title>Image Converter</title>
+</head>
+<body>
+    <h1 style="font-family: sans-serif; color: white;">Image Converter</h1>
+    <p style="font-family: sans-serif; color: white;">PNG to Blueprint</p>
+    <br>
+
+    <div class="custom-upload">
+        <label for="pngInput" class="file-upload">Choose PNG</label>
+        <input type="file" accept="image/png" id="pngInput" style="display: none;">
+        <img id="imagePreview" alt="Preview" style="margin-top:10px; max-width:300px; display:none;" />
+        <div id="fileNameDisplay">No file selected</div>
+    </div>
+    <canvas id="canvas" style="display:none;"></canvas>
+
+    <br>
+    <button id="button">Process</button>
+
+
+    <script type="module" src="./script.js"></script>
+</body>
+</html>
