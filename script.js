@@ -109,27 +109,6 @@ function download_text_file(filename, content) {
     link.click();
 }
 
-async function upload_bin_file(byteBuffer) {
-    try {
-        const response = await fetch("https://api.builderment.com/blueprints", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/octet-stream",
-                "Accept": "application/json"
-            },
-            body: byteBuffer
-        });
-
-        const data = await response.json();
-        console.log("Upload successful:", data);
-        alert(`Blueprint uploaded! ID: ${data.id}`);
-    } catch (error) {
-        console.error("Upload failed:", error);
-        show_warning("Failed to upload blueprint.");
-    }
-}
-
-
 
 function remove_extension(filename) {
     const dotIndex = filename.lastIndexOf('.');
@@ -302,9 +281,7 @@ button.onclick = function() {
 
     read_image(file, function (pixelData) {
         let bp = new Blueprint(remove_extension(file.name), pixelData);
-        upload_bin_file(bp.bin_data);
-        //download_bin_file(remove_extension(file.name)+".blp", bp.bin_data);
-        //downloadTextFile("pixel_data.txt", pixelData);
+        download_bin_file(remove_extension(file.name)+".blp", bp.bin_data);
     });
 }
 
