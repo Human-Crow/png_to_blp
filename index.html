@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="styles.css" type="text/css">
-    
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -18,7 +18,7 @@
     <div class="custom-upload">
         <label for="pngInput" class="file-upload">Choose PNG</label>
         <input type="file" accept="image/png" id="pngInput" style="display: none;">
-        <img id="imagePreview" alt="Preview" style="margin-top:10px; max-width:300px; display:none;" />
+        <img id="imagePreview" alt="Preview" style="margin-top:10px; max-width:200px; display:none;" />
         <div id="fileNameDisplay">No file selected</div>
     </div>
     <canvas id="canvas" style="display:none;"></canvas>
@@ -26,10 +26,11 @@
 
     <button id="button">Download</button>
 
-    <p>Place file in this folder:<br>Windows:</p>
+    <p>Place the file in this folder:<br>Windows:</p>
     <pre>%USERPROFILE%/AppData/Local/Builderment/Saved/Blueprints</pre>
     <p>Mac:</p>
     <pre>~/Library/Application Support/BuildermentLLC/Builderment/Saved/Blueprints</pre>
+    <br><br><br><br><br><br>
 
     <script type="module" src="./script.js"></script>
 </body>
