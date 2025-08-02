@@ -1,12 +1,9 @@
 
-
-
+//#region Constants
 const button = document.getElementById("button");
 const png_input = document.getElementById("pngInput");
 const file_name_display = document.getElementById('fileNameDisplay');
 const preview = document.getElementById('imagePreview');
-
-
 
 const colors = [
     [[3001, 0], [46, 51, 54]],
@@ -56,7 +53,120 @@ const colors = [
     [[3037, 2], [191, 100, 56]],
     [[3037, 2], [220, 134, 75]]
 ];
+//#endregion
 
+
+
+//#region Other functions
+function show_warning(message) {
+    const warning = document.createElement("div");
+    warning.textContent = message;
+    warning.style.cssText = `
+        color: white; 
+        font-weight: bold; 
+        position: fixed; 
+        text-align: center;
+        top: 10px; 
+        left: 50%; 
+        transform: translateX(-50%); 
+        background:rgb(180, 0, 0); 
+        padding: 10px; 
+        border: 1px solid white;
+        border-radius: 12px;
+        box-shadow: 0px 0px 10px rgb(0, 0, 0);
+    `;
+
+    // Find the last warning element
+    const warnings = document.querySelectorAll(".warning-message");
+    if (warnings.length > 0) {
+        const lastWarning = warnings[warnings.length - 1]; // Get last warning
+        const lastWarningRect = lastWarning.getBoundingClientRect(); // Get position
+        warning.style.top = `${lastWarningRect.bottom/1.5-14.28454342 +5}px`; // Adjust position
+    }
+
+    // Add class for identification
+    warning.classList.add("warning-message");
+    document.body.appendChild(warning);
+
+    // Remove warning when user clicks anywhere on the page
+    document.addEventListener("click", () => warning.remove(), { once: true });
+}
+
+function get_distance(c1, c2) {
+    return Math.sqrt(
+        (c2[0] - c1[0]) ** 2 +
+        (c2[1] - c1[1]) ** 2 +
+        (c2[2] - c1[2]) ** 2
+    );
+}
+
+function remove_extension(filename) {
+    const dotIndex = filename.lastIndexOf('.');
+    return dotIndex > 0 ? filename.substring(0, dotIndex) : filename;
+}
+
+function download_bin_file(filename, byteBuffer) {
+    const blob = new Blob([byteBuffer], { type: "application/octet-stream" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    link.click();
+}
+
+function download_text_file(filename, content) {
+    const blob = new Blob([content], { type: "text/plain" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    link.click();
+}
+//#endregion
+
+
+
+//#region File functions
+class BinaryData {
+    constructor(total_bytes) {
+        this.index = 0;
+        this.bytes = new Uint8Array(total_bytes);
+    }
+    set_uint8(numbers, i = this.index) {
+        numbers = this.#to_array(numbers);
+        this.bytes.set(numbers, i)
+        this.index = i + numbers.length;
+    }
+    set_uint16(numbers, i = this.index) {
+        const byteArray = this.#to_array(numbers).flatMap(num => this.#uint16_to_uint8(num));
+        this.set_uint8(byteArray, i);
+    }
+    set_uint32(numbers, i = this.index) {
+        const byteArray = this.#to_array(numbers).flatMap(num => this.#uint32_to_uint8(num));
+        this.set_uint8(byteArray, i);
+    }
+    set_string(str, i = this.index) {
+        const encoded = new TextEncoder().encode(str);
+        this.set_uint8(Array.from(encoded), i);
+    }
+    #to_array(input) {
+        return Array.isArray(input) ? input : [input];
+    }
+    #uint16_to_uint8(num) {
+        num = num >>> 0;        // Convert - to +
+        return [
+            num & 0xFF,         // Byte 0 (least significant)
+            (num >> 8) & 0xFF   // Byte 1 (most significant)
+        ];
+    }
+    #uint32_to_uint8(num) {
+        num = num >>> 0;        // Convert - to +
+        return [
+            num & 0xFF,         // Byte 0 (least significant)
+            (num >> 8) & 0xFF,  // Byte 1
+            (num >> 16) & 0xFF, // Byte 2
+            (num >> 24) & 0xFF  // Byte 3 (most significant)
+        ];
+    }
+}
 
 function read_image(file, callback) {
     const img = new Image();
@@ -94,86 +204,28 @@ function read_image(file, callback) {
     reader.readAsDataURL(file);
 }
 
-function download_bin_file(filename, byteBuffer) {
-    const blob = new Blob([byteBuffer], { type: "application/octet-stream" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = filename;
-    link.click();
-}
-
-function download_text_file(filename, content) {
-    const blob = new Blob([content], { type: "text/plain" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = filename;
-    link.click();
-}
-
-
-function remove_extension(filename) {
-    const dotIndex = filename.lastIndexOf('.');
-    return dotIndex > 0 ? filename.substring(0, dotIndex) : filename;
-}
-
-function get_distance(c1, c2) {
-    return Math.sqrt(
-        (c2[0] - c1[0]) ** 2 +
-        (c2[1] - c1[1]) ** 2 +
-        (c2[2] - c1[2]) ** 2
-    );
-}
-
-class Blueprint {
-    constructor(name, pixels) {
-        this.pixels = pixels;
-        this.name = name;
-        this.building_amount = this.get_size();
-        if (this.building_amount > 999999) {
-            show_warning("BluePrint is too big to open.");
-            throw Error("BluePrint is too big to open.");
-        } else if (this.building_amount > 78600) {
-            show_warning("Blueprint is too big to share.");
-            throw Error("Blueprint is too big to share.");
-        }
-        let name_bytes = name.length + (4 - name.length % 4);
-        let file_size = 56 + name_bytes + this.building_amount * 20;
-        this.bin_data = new Uint8Array(file_size);
-        this.create_bin_data();
-    }
-
-    get_size() {
+function pixels_to_blueprint(name, pixels) {
+    function get_size_and_shift_coords(pixels) {
         let size = 0;
-        for (let y = 0; y < this.pixels.length; y++) {
-            for (let x = 0; x < this.pixels[y].length; x++) {
-                let [r, g, b, a] = this.pixels[y][x];
-                if (a > 127) {size++;}
+        let minX = Infinity, minY = Infinity;
+        let maxX = -Infinity, maxY = -Infinity;
+        for (const [y, row] of pixels.entries()) {
+            for (const [x, [r, g, b, a]] of row.entries()) {
+                if (a > 127) {
+                    size++;
+                    if (x < minX) {minX = x;}
+                    if (y < minY) {minY = y;}
+                    if (x > maxX) {maxX = x;}
+                    if (y > maxY) {maxY = y;}
+                }
             }
         }
-        return size;
+        const shift_x = Math.floor((minX + maxX) / 2);
+        const shift_y = Math.floor((minY + maxY) / 2);
+        return [size, shift_x, shift_y];
     }
 
-    num_to_uint32(num) {
-        num = num >>> 0;
-        return [
-            num & 0xFF,             // Byte 0 (least significant)
-            (num >> 8) & 0xFF,      // Byte 1
-            (num >> 16) & 0xFF,     // Byte 2
-            (num >> 24) & 0xFF      // Byte 3 (most significant)
-        ];
-    }
-    num_to_uint16(num) {
-        num = num >>> 0;
-        return [
-            num & 0xFF,             // Byte 0 (least significant)
-            (num >> 8) & 0xFF      // Byte 1 (most significant)
-        ];
-    }
-    str_to_nums(str) {
-        return Array.from(str).map(char => char.charCodeAt(0));
-    }
-
-    get_building(target_rgb) {
+    function get_building(target_rgb) {
         let minDist = Infinity;
         let closest = null;
         for (const [build, build_rgb] of colors) {
@@ -187,102 +239,68 @@ class Blueprint {
         return closest;
     }
 
-    create_bin_data() {
-        // Set start bytes
-        let start_bytes = [16,0,0,0,0,0,10,0,16,0,0,0,4,0,8,0,10,0,0,0];
-        this.bin_data.set(start_bytes, 0);
-        let bytes_to_name = 28 + 20 * this.building_amount;
-        this.bin_data.set(this.num_to_uint32(bytes_to_name), 20);
-        this.bin_data.set(this.num_to_uint32(4), 24);
-        this.bin_data.set(this.num_to_uint32(this.building_amount), 28);
+    // Check Size
+    const [building_amount, shift_x, shift_y] = get_size_and_shift_coords(pixels);
+    if (building_amount > 999999) {
+        show_warning("BluePrint is too big to open.");
+        throw Error("BluePrint is too big to open.");
+    } else if (building_amount > 78600) {
+        show_warning("Blueprint is too big to share.");
+        console.log("Blueprint is too big to share.");
+    }
 
-        // Set building starting positions
-        let f_index = 32;
-        for (let i = 0; i < this.building_amount; i++) {
-            let pos = (this.building_amount - i) * 20
-            this.bin_data.set(this.num_to_uint32(pos), f_index);
-            f_index += 4;
-        }
+    // Set start bytes
+    let name_bytes = name.length + (4 - name.length % 4);
+    let file_size = 56 + name_bytes + building_amount * 20;
+    let bin = new BinaryData(file_size);
+    let start_bytes = [16,0,0,0,0,0,10,0,16,0,0,0,4,0,8,0,10,0,0,0];
+    bin.set_uint8(start_bytes);
+    let bytes_to_name = 28 + 20 * building_amount;
+    bin.set_uint32([bytes_to_name, 4, building_amount]);
 
-        // Set building format
-        let format = [0,0,14,0,16,0,6,0,8,0,12,0,4,0,5,0];
-        this.bin_data.set(format, f_index);
-        f_index += 16;
+    // Set building starting positions
+    for (let i = 0; i < building_amount; i++) {
+        let pos = (building_amount - i) * 20
+        bin.set_uint32(pos);
+    }
 
-        // Set buildings
-        let bytes_to_format = 14;
-        for (let y = 0; y < this.pixels.length; y++) {
-            for (let x = 0; x < this.pixels[y].length; x++) {
-                let [r, g, b, a] = this.pixels[y][x];
-                if (a > 127) {
-                    let [building, orientation] = this.get_building([r,g,b]);
-                    this.bin_data.set(this.num_to_uint32(bytes_to_format), f_index);
-                    f_index += 4;
-                    this.bin_data.set([orientation], f_index);
-                    f_index += 1;
-                    this.bin_data.set([0], f_index);
-                    f_index += 1;
-                    this.bin_data.set(this.num_to_uint16(building), f_index);
-                    f_index += 2;
-                    this.bin_data.set(this.num_to_uint32(x), f_index);
-                    f_index += 4;
-                    this.bin_data.set(this.num_to_uint32(y), f_index);
-                    f_index += 4;
-                    bytes_to_format += 16;
-                }
+    // Set building format
+    let format = [0,0,14,0,16,0,6,0,8,0,12,0,4,0,5,0];
+    bin.set_uint8(format);
+
+    // Set buildings
+    let bytes_to_format = 14;
+    for (const [y, row] of pixels.entries()) {
+        for (const [x, [r, g, b, a]] of row.entries()) {
+            if (a > 127) {
+                let [building, orientation] = get_building([r,g,b]);
+                bin.set_uint32(bytes_to_format);
+                bin.set_uint8([orientation, 0]);
+                bin.set_uint16(building);
+                bin.set_uint32([x - shift_x, y - shift_y])
+                bytes_to_format += 16;
             }
         }
-
-        // Set name
-        this.bin_data.set(this.num_to_uint32(this.name.length), f_index);
-        f_index += 4;
-        this.bin_data.set(this.str_to_nums(this.name), f_index);
-    }
-}
-
-function show_warning(message) {
-    const warning = document.createElement("div");
-    warning.textContent = message;
-    warning.style.cssText = `
-        color: white; 
-        font-weight: bold; 
-        position: fixed; 
-        text-align: center;
-        top: 10px; 
-        left: 50%; 
-        transform: translateX(-50%); 
-        background:rgb(180, 0, 0); 
-        padding: 10px; 
-        border: 1px solid white;
-        border-radius: 12px;
-        box-shadow: 0px 0px 10px rgb(0, 0, 0);
-    `;
-
-    // Find the last warning element
-    const warnings = document.querySelectorAll(".warning-message");
-    if (warnings.length > 0) {
-        const lastWarning = warnings[warnings.length - 1]; // Get last warning
-        const lastWarningRect = lastWarning.getBoundingClientRect(); // Get position
-        warning.style.top = `${lastWarningRect.bottom/1.5-14.28454342 +5}px`; // Adjust position
     }
 
-    // Add class for identification
-    warning.classList.add("warning-message");
-    document.body.appendChild(warning);
+    // Set name
+    bin.set_uint32(name.length);
+    bin.set_string(name);
 
-    // Remove warning when user clicks anywhere on the page
-    document.addEventListener("click", () => warning.remove(), { once: true });
+    return bin.bytes
 }
+//#endregion
 
 
 
+//#region Element functions
 button.onclick = function() {
     const file = png_input.files[0];
     if (!file) return;
 
     read_image(file, function (pixelData) {
-        let bp = new Blueprint(remove_extension(file.name), pixelData);
-        download_bin_file(remove_extension(file.name)+".blp", bp.bin_data);
+        const bytes = pixels_to_blueprint(remove_extension(file.name), pixelData);
+        download_bin_file(remove_extension(file.name)+".blp", bytes);
     });
 }
 
@@ -302,3 +320,4 @@ png_input.onchange = function() {
         preview.style.display = 'none';
     }
 }
+//#endregion
