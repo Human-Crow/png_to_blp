@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="styles.css" type="text/css">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <title>Image Converter</title>
+</head>
+<body>
+    <h1>Image Converter</h1>
+    <p>PNG to Blueprint</p>
+    <p style="color: rgb(255, 110, 110); font-size: 13px;">Max size for sharing:&nbsp;&nbsp; &nbsp;&nbsp;78,600 Buildings</p>
+    <p style="color: rgb(255, 110, 110); font-size: 13px;">Max size for opening:&nbsp; 999,999 Buildings</p>
+    <br><br>
+
+    <div class="custom-upload">
+        <label for="pngInput" class="file-upload">Choose PNG</label>
+        <input type="file" accept="image/png" id="pngInput" style="display: none;">
+        <img id="imagePreview" alt="Preview" style="margin-top:10px; max-width:250px; display:none;" />
+        <div id="fileNameDisplay">No file selected</div>
+    </div>
+    <canvas id="canvas" style="display:none;"></canvas>
+    <br>
+
+    <button id="button">Download</button>
+
+    <p>Place the file in this folder:<br>Windows:</p>
+    <pre>%USERPROFILE%/AppData/Local/Builderment/Saved/Blueprints</pre>
+    <p>Mac:</p>
+    <pre>~/Library/Application Support/BuildermentLLC/Builderment/Saved/Blueprints</pre>
+    <br><br><br><br><br><br>
+
+    <script type="module" src="./script.js"></script>
+</body>
+</html>

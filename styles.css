@@ -1,0 +1,64 @@
+h1 {
+    font-family: sans-serif;
+    color: #ffffff;
+}
+p {
+    font-family: sans-serif;
+    color: #ffffff;
+    margin-bottom: -10px;
+}
+pre {
+    font-size: 13px;
+    color: #cecece;
+    white-space: pre-wrap;
+    max-width: 90%;
+    overflow-wrap: break-word;
+}
+body {
+    background-color: #1e1e1e;
+    transform: scale(1.5);
+    transform-origin: top left;
+    width: 65%;
+    touch-action: manipulation;
+}
+
+button {
+    color: #ffffff;
+    background-color: #007fb1;
+    border: 1px solid #6b6b6b;
+    border-radius: 8px;
+    width: 150px;
+    height: 28px;
+    margin-bottom: 5px;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #009edd;
+}
+
+
+
+.file-upload {
+    display: inline-flex;
+    align-items: center; 
+    justify-content: center;
+    background-color: #007fb1;
+    border: 1px solid #6b6b6b;
+    border-radius: 8px;
+    color: #ffffff;
+    font-family: sans-serif;
+    cursor: pointer;
+    height: 25px;
+    width: 148px;
+    margin-bottom: 5px;
+}
+
+.file-upload:hover {
+    background-color: #009edd;
+}
+
+#fileNameDisplay {
+    font-family: sans-serif;
+    color: white;
+}
