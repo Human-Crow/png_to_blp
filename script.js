@@ -1,6 +1,9 @@
+import {
+    uploadBlp, imageBlp
+} from "https://builderment-blp.reddit2611.workers.dev/api.js";
+
 const WORKER = "https://builderment-blp.reddit2611.workers.dev";
 
-import {uploadBlp, imageBlp} from `${WORKER}/api.js`;
 
 
 const img_input = document.getElementById("imgInput");
