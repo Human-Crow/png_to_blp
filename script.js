@@ -1,6 +1,6 @@
-import {
-    uploadBlp, imageBlp
-} from "https://builderment-blp.reddit2611.workers.dev/api.js";
+const WORKER = "https://builderment-blp.reddit2611.workers.dev";
+
+import {uploadBlp, imageBlp} from `${WORKER}/api.js`;
 
 
 const img_input = document.getElementById("imgInput");
@@ -19,8 +19,8 @@ convert_btn.onclick = async function() {
     try {
         const file = img_input.files[0];
         if (file) {
-            const buffer = await imageBlp(file);
-            const result = await uploadBlp(buffer);
+            const buffer = await imageBlp(WORKER, file);
+            const result = await uploadBlp(WORKER, buffer);
             text_id.textContent = result.id;
             link_id.href = result.url;
             link_id.textContent = result.url;
