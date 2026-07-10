@@ -1,0 +1,94 @@
+h1 {
+    font-family: sans-serif;
+    color: #ffffff;
+}
+p {
+    font-family: sans-serif;
+    color: #ffffff;
+    margin-bottom: -10px;
+}
+pre {
+    font-size: 13px;
+    color: #cecece;
+    white-space: pre-wrap;
+    max-width: 90%;
+    overflow-wrap: break-word;
+}
+body {
+    font-family: Arial, sans-serif;
+    background: #1e1e1e;
+    color: white;
+    padding: 10px;
+    touch-action: manipulation;
+    transform: scale(1.5);
+    transform-origin: top left;
+    width: 65%;
+}
+
+button {
+    color: #ffffff;
+    background-color: #007fb1;
+    border: 1px solid #6b6b6b;
+    border-radius: 8px;
+    width: 150px;
+    height: 28px;
+    margin-bottom: 5px;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #009edd;
+}
+
+
+
+.file-upload {
+    display: inline-flex;
+    align-items: center; 
+    justify-content: center;
+    background-color: #007fb1;
+    border: 1px solid #6b6b6b;
+    border-radius: 8px;
+    color: #ffffff;
+    font-family: sans-serif;
+    cursor: pointer;
+    height: 25px;
+    width: 148px;
+    margin-bottom: 5px;
+}
+
+.file-upload:hover {
+    background-color: #009edd;
+}
+
+#fileNameDisplay {
+    font-family: sans-serif;
+    color: white;
+}
+
+
+label {
+    display: block;
+    margin-top: 4px;
+    font-size: 20px;
+}
+.alt-row {
+    display: flex;
+    flex-direction: column;
+}
+input, select {
+    width: 100%;
+    padding: 4px;
+    margin-top: 4px;
+    background: #444;
+    color: white;
+    border: 1px solid #666;
+    border-radius: 8px;
+    font-size: 14px;
+}
+input {
+    width: 140px;
+}
+a {
+    color: #2196f3;
+}
