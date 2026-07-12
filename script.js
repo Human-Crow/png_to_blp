@@ -1,8 +1,8 @@
 import {
     uploadBlp, imageBlp
-} from "https://builderment-blp.reddit2611.workers.dev/api.js";
+} from "https://builderment.crow73.workers.dev/api.js";
 
-const WORKER = "https://builderment-blp.reddit2611.workers.dev";
+const WORKER = "https://builderment.crow73.workers.dev/";
 
 
 
